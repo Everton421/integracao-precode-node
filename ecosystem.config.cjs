@@ -4,7 +4,7 @@
 module.exports = {
   apps: [
     {
-      name: "integracao-shopify",
+      name: "integracao-procode-node",
       script: "src/server.ts", // O arquivo que inicia tudo
       interpreter: "node",      // O binário a ser usado
       node_args: [
