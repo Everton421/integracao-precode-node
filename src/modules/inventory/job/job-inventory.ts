@@ -1,8 +1,12 @@
 import { PostInventoryProduct } from "../service/post-inventory-product.ts";
 
 import cron from 'node-cron';
+export class JobInventory { 
+   static async  job(){
 
-       cron.schedule(" */50 * * * * ", async () => {
+        const cronConfig = process.env.ATUALIZAR_INVENTARIO ||  '*/50 * * * *';
+    console.log(`[V] Tarefa de inventario agendada ${cronConfig} ...`)
+       cron.schedule( cronConfig , async () => {
             console.log('Executando tarefa [ Inventario ] ...')
 
                 let inExecution = false;
@@ -18,5 +22,8 @@ import cron from 'node-cron';
                   inExecution = false;
                 }
 
-
     })
+
+    }
+}
+

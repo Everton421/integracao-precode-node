@@ -7,6 +7,7 @@ import path from 'path';
 
 import cookieParser from 'cookie-parser';
 import { router } from './web/routes.ts';
+import { JobInventory } from './modules/inventory/job/job-inventory.ts';
 
     const app = express();
 
@@ -36,7 +37,7 @@ import { router } from './web/routes.ts';
             })
         })
 
-  
+  await JobInventory.job();
        
 
 const PORT_API = process.env.PORT_API; // Porta padrão para HTTPS
