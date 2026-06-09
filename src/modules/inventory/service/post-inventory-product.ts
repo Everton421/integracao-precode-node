@@ -82,7 +82,7 @@ export class PostInventoryProduct {
                     }
                     
                  try{
-                    delay(250);
+                    delay(500, ` Atualização do inventario do produto ${CODIGO} `);
                     const responseApiPrecode = await api.put('v3/products/inventory',
                         {
                            
