@@ -4,13 +4,14 @@ import { delay } from "../../../shared/utils/delay.ts";
 
 
 type resultInvoice = {
-      situacao:string 
-                                         COD_SITE:number
-                                         CHAVE_NFE:string
-                                         NUMERO_NF:number
-                                         DATA_EMISSAO:string
-                                         SERIE:string
-                                         XML_NFE:string
+      situacao:string
+      CODIGO_PEDIDO_BD: number
+      COD_SITE:number
+      CHAVE_NFE:string
+      NUMERO_NF:number
+      DATA_EMISSAO:string
+      SERIE:string
+      XML_NFE:string
 }
 
 type resultPutOrder = {
@@ -25,6 +26,7 @@ type resultPutOrder = {
 export class PostInvoiceService {
    static async exec(erpOrderId?:number) {
         let sqlInvoices = `SELECT 
+                                        co.codigo as CODIGO_PEDIDO_BD,
                                         pid.situacao,
                                         co.COD_SITE,
                                         cnf.CHAVE_NFE,
@@ -36,7 +38,8 @@ export class PostInvoiceService {
                                                 inner join ${database_api}.pedido_precode pid on co.codigo = pid.codigo_pedido_bd
                                                 inner join ${db_vendas}.cad_nf cnf on cnf.pedido = co.codigo
                                                 inner join ${db_vendas}.xml_fatur xf on xf.FATUR = cnf.CODIGO
-                                                where cnf.CHAVE_NFE != ''
+                                                where cnf.CHAVE_NFE IS NOT NULL AND cnf.CHAVE_NFE != ''
+                                                AND xf.XML_NFE IS NOT NULL
                                                 and pid.situacao = 'aprovado' 
                                                 `
 
@@ -48,13 +51,13 @@ export class PostInvoiceService {
             const resultInvoice =ArrresultInvoice as resultInvoice[];
                 if(resultInvoice.length >  0 ){
                     for( const invice of resultInvoice){
-                        const { CHAVE_NFE, COD_SITE, DATA_EMISSAO, NUMERO_NF, SERIE, XML_NFE , situacao } =invice;
+                        const { CHAVE_NFE, COD_SITE, DATA_EMISSAO, NUMERO_NF, SERIE, XML_NFE, situacao, CODIGO_PEDIDO_BD } = invice;
                             const xmlPayload =  Buffer.from(XML_NFE).toString('base64');
                         const payload = {
                                  pedido : [{
                                          codigoPedido : COD_SITE,
                                          chaveNF : String(CHAVE_NFE),
-                                         numeroMapa : 0,
+                                         numeroMapa : null,
                                          xml : xmlPayload,
                                     },
                                 ]
@@ -67,14 +70,15 @@ export class PostInvoiceService {
                                 if(responseApiPrecode.status == 200){
                                     if(responseApiPrecode.data.pedido){
                                         for(const p of responseApiPrecode.data.pedido ){
-                                            if(p.numeroPedido){
+                                            console.log(`[${CODIGO_PEDIDO_BD}] codigoPedido: ${COD_SITE} | numeroPedido: ${p.numeroPedido} | mensagem: ${p.mensagem} | xmlInformado: ${p.xmlInformado}`);
+                                            if(p.numeroPedido && p.mensagem === 'sucesso'){
                                                 await conn2.query(`UPDATE ${database_api}.pedido_precode 
-                                                        set situacao = 'nota_enviada'    
-                                                    `)
+                                                        set situacao = 'nota_enviada'
+                                                        where codigo_pedido_bd = ?    
+                                                    `, [CODIGO_PEDIDO_BD])
                                             }
                                         }
                                     }
-                                    console.log(responseApiPrecode.data);
                                 }
                             }catch(e:any){
                                     console.log(e);

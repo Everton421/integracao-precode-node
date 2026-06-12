@@ -2,6 +2,8 @@
 import cron from 'node-cron';
 import { PostInvoiceService } from '../service/post-invoice-service.ts';
 export class JobInvoices { 
+   private static inExecution = false;
+
    static async  job(){
 
         const cronConfig = process.env.ENVIAR_NOTAS ||  '*/50 * * * *';
@@ -9,17 +11,16 @@ export class JobInvoices {
        cron.schedule( cronConfig , async () => {
             console.log('Executando tarefa [ notas ] ...')
 
-                let inExecution = false;
                 try{
-                    if(inExecution){
+                    if(JobInvoices.inExecution){
                         return console.log("[X] Tarefa de envio de notas ainda em execução...");
                     }
-                    inExecution = true
+                    JobInvoices.inExecution = true
                    await PostInvoiceService.exec();
                 }catch( e ){
 
                 }finally{
-                  inExecution = false;
+                  JobInvoices.inExecution = false;
                 }
 
     })
