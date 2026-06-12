@@ -8,8 +8,9 @@
     "dev": "node --env-file .env --watch --experimental-strip-types src/server.ts",
     "test:put-price-request" : "node --env-file .env --experimental-strip-types --test src/modules/pricing/__test__/put-price-request.test.ts",
     "test:verify-update-price" : "node --env-file .env --experimental-strip-types --test src/modules/pricing/__test__/verify-update-price.test.ts",
-    "post-inventory":"node --env-file .env --experimental-strip-types src/scripts/post-full-inventory.ts" 
-   },
+    "post-inventory":"node --env-file .env --experimental-strip-types src/scripts/post-full-inventory.ts",
+    "post-invoices":"node --env-file .env --experimental-strip-types src/scripts/post-invoices.ts" 
+  },
   "devDependencies": {
     "@types/amqplib": "^0.10.8",
     "@types/cookie-parser": "^1.4.10",

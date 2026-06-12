@@ -8,6 +8,7 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 import { router } from './web/routes.ts';
 import { JobInventory } from './modules/inventory/job/job-inventory.ts';
+import { JobInvoices } from './modules/invoice/job/job-enviar-nota.ts';
 
     const app = express();
 
@@ -37,8 +38,9 @@ import { JobInventory } from './modules/inventory/job/job-inventory.ts';
             })
         })
 
-  await JobInventory.job();
-       
+        await JobInventory.job();
+       await JobInvoices.job();
+
 
 const PORT_API = process.env.PORT_API; // Porta padrão para HTTPS
 
