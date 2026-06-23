@@ -46,7 +46,6 @@ export class PostInventoryProduct {
                                                             LEFT JOIN ${db_estoque}.setores AS S ON PS.SETOR = S.CODIGO
                                                         WHERE 
 															 PS.SETOR = 1
-                                                              and P.CODIGO = 180
                                                             GROUP BY P.CODIGO) AS est;`
 
         const [ responseInventoryProducts ] = await conn2.query(sql);
@@ -72,7 +71,6 @@ export class PostInventoryProduct {
                                               JOIN ${db_publico}.prod_tabprecos p ON cp.CODIGO = p.PRODUTO
                                               JOIN ${database_api}.produto_precode pp ON pp.CODIGO_BD = cp.CODIGO
                                                WHERE p.PRODUTO = '${CODIGO}' AND p.TABELA = 1 
-                                               and cp.codigo = 180
                                                ;`
                  
                                                const [resultErpPriceProduct] = await conn2.query(sqlPrices);
