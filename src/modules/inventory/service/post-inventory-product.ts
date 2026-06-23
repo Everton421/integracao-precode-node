@@ -112,14 +112,13 @@ export class PostInventoryProduct {
                                 `; 
                          const [resultUpdate] =   await conn2.query(sqlUpdateInventory);
                        
-                              console.log(`  ${responseApiPrecode.data.products[0].return[0].message}`);
                               const resultRequest = responseApiPrecode.data.products[0].return[0].message;
                        
-                            if(resultRequest == "Novo preço possui uma diferença maior que 50 porcento do preço atual"){
-                               const sqlCreateLog = `INSERT INTO ${database_api}.log_precode  SET  acao =  'atualizar inventario', status ='erro', referencia = '${CODIGO}';`
+                            if(resultRequest !== "sucesso"){
+                                  const sqlCreateLog = `INSERT INTO ${database_api}.log_precode  SET  acao =  'atualizar inventario', mensagem='${resultRequest}' , status ='erro', referencia = '${CODIGO}';`
                                 const resultInsertLog = await  conn2.query(sqlCreateLog);
                             }else{
-                                  const sqlCreateLog = `INSERT INTO ${database_api}.log_precode  SET  acao =  'atualizar inventario', mensagem='${resultRequest}' , status ='sucesso', referencia = '${CODIGO}';`
+                                const sqlCreateLog = `INSERT INTO ${database_api}.log_precode  SET  acao =  'atualizar inventario',  status ='sucesso', referencia = '${CODIGO}';`
                                 const resultInsertLog = await  conn2.query(sqlCreateLog);
                             }
                             
