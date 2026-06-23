@@ -46,6 +46,7 @@ export class PostInventoryProduct {
                                                             LEFT JOIN ${db_estoque}.setores AS S ON PS.SETOR = S.CODIGO
                                                         WHERE 
 															 PS.SETOR = 1
+                                                              and P.CODIGO = 180
                                                             GROUP BY P.CODIGO) AS est;`
 
         const [ responseInventoryProducts ] = await conn2.query(sql);
@@ -70,7 +71,9 @@ export class PostInventoryProduct {
                                               FROM  ${db_publico}.cad_prod cp
                                               JOIN ${db_publico}.prod_tabprecos p ON cp.CODIGO = p.PRODUTO
                                               JOIN ${database_api}.produto_precode pp ON pp.CODIGO_BD = cp.CODIGO
-                                               WHERE p.PRODUTO = '${CODIGO}' AND p.TABELA = 1 ;`
+                                               WHERE p.PRODUTO = '${CODIGO}' AND p.TABELA = 1 
+                                               and cp.codigo = 180
+                                               ;`
                  
                                                const [resultErpPriceProduct] = await conn2.query(sqlPrices);
                     const priceProduct = resultErpPriceProduct as ProductPrice[];
@@ -110,9 +113,19 @@ export class PostInventoryProduct {
                                     WHERE CODIGO_BD = '${CODIGO}';
                                 `; 
                          const [resultUpdate] =   await conn2.query(sqlUpdateInventory);
-                        console.log(`  ${responseApiPrecode.data.products[0].return[0].message}`);
-                        console.log(`[V]  atualizado produtos ${CODIGO} preço: $${price}, estoque: ${ESTOQUE}`);
-                    }
+                       
+                              console.log(`  ${responseApiPrecode.data.products[0].return[0].message}`);
+                              const resultRequest = responseApiPrecode.data.products[0].return[0].message;
+                       
+                            if(resultRequest == "Novo preço possui uma diferença maior que 50 porcento do preço atual"){
+                               const sqlCreateLog = `INSERT INTO ${database_api}.log_precode  SET  acao =  'atualizar inventario', status ='erro', referencia = '${CODIGO}';`
+                                const resultInsertLog = await  conn2.query(sqlCreateLog);
+                            }else{
+                                  const sqlCreateLog = `INSERT INTO ${database_api}.log_precode  SET  acao =  'atualizar inventario', mensagem='${resultRequest}' , status ='erro', referencia = '${CODIGO}';`
+                                const resultInsertLog = await  conn2.query(sqlCreateLog);
+                            }
+                            
+                   }
                 }catch(e){
                     if( isAxiosError(e)){
                         console.log("erro ao tentar enviar o saldo e o preço.")
