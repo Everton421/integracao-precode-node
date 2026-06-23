@@ -119,7 +119,7 @@ export class PostInventoryProduct {
                                const sqlCreateLog = `INSERT INTO ${database_api}.log_precode  SET  acao =  'atualizar inventario', status ='erro', referencia = '${CODIGO}';`
                                 const resultInsertLog = await  conn2.query(sqlCreateLog);
                             }else{
-                                  const sqlCreateLog = `INSERT INTO ${database_api}.log_precode  SET  acao =  'atualizar inventario', mensagem='${resultRequest}' , status ='erro', referencia = '${CODIGO}';`
+                                  const sqlCreateLog = `INSERT INTO ${database_api}.log_precode  SET  acao =  'atualizar inventario', mensagem='${resultRequest}' , status ='sucesso', referencia = '${CODIGO}';`
                                 const resultInsertLog = await  conn2.query(sqlCreateLog);
                             }
                             
