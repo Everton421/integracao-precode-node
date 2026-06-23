@@ -84,8 +84,7 @@ export class PostInventoryProduct {
                     
                  try{
                    await delay(250, ` Atualização do inventario do produto ${CODIGO} `);
-                    const responseApiPrecode = await api.put('v3/products/inventory',
-                        {
+                   const payload =   {
                            
                             "products": [{
                                 "ref": String(CODIGO),
@@ -103,6 +102,9 @@ export class PostInventoryProduct {
                                 }]
                             }]
                         }
+
+                    const responseApiPrecode = await api.put('v3/products/inventory',
+                         payload
                     )
                  
                     if(responseApiPrecode.status == 200 || responseApiPrecode.status == 201){
@@ -115,10 +117,11 @@ export class PostInventoryProduct {
                               const resultRequest = responseApiPrecode.data.products[0].return[0].message;
                        
                             if(resultRequest !== "sucesso"){
-                                  const sqlCreateLog = `INSERT INTO ${database_api}.log_precode  SET  acao =  'atualizar inventario', mensagem='${resultRequest}' , status ='erro', referencia = '${CODIGO}';`
+                                  const sqlCreateLog = `INSERT INTO ${database_api}.log_precode  SET  acao =  'atualizar inventario', mensagem='${resultRequest}' , payload= '${JSON.stringify(payload)}', status ='erro', referencia = '${CODIGO}';`
                                 const resultInsertLog = await  conn2.query(sqlCreateLog);
+                            
                             }else{
-                                const sqlCreateLog = `INSERT INTO ${database_api}.log_precode  SET  acao =  'atualizar inventario',  status ='sucesso', referencia = '${CODIGO}';`
+                                const sqlCreateLog = `INSERT INTO ${database_api}.log_precode  SET  acao =  'atualizar inventario',  status ='sucesso', payload = '${JSON.stringify(payload)}', referencia = '${CODIGO}';`
                                 const resultInsertLog = await  conn2.query(sqlCreateLog);
                             }
                             
